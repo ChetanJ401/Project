@@ -1,0 +1,13 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "Assignment Project",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon index.js",
+    "start:prod": "node index.js"
+  },
+  
+  "author": "Chetan Jagtap",
+  "license": "ISC"
+}
