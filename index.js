@@ -67,8 +67,8 @@ if (cluster.isMaster) {
 
   // Creating an users array to accommodate the dummy data
   let users = [
-    { id: '1', username: 'Alex', age: 25, hobbies: "Reading,Acting" },
-    { id: '2', username: 'Henry', age: 30, hobbies: "Writing,Gardening" }
+    { id: '1', username: 'Alex', age: 25, hobbies: ["Reading","Acting"] },
+    { id: '2', username: 'Henry', age: 30, hobbies: ["Writing","Gardening"] }
   ];
 
   // Api call to get the data for all users
@@ -89,25 +89,54 @@ if (cluster.isMaster) {
   // Api call to create a new user
   app.post('/api/users', basicAuthorizationMechanism, (req, res) => {
     const { username, age, hobbies } = req.body;
+  
+    if (!username || !age || !hobbies) {
+        return res.status(400).json({ message: 'Fields are missing.Username, age, and hobbies are required fields' });
+      }
+
+    if (typeof age !== 'number') {
+        return res.status(400).json({ message: 'Age must be a number' });
+      }
+    // Check if hobbies is not an array
+    if (!Array.isArray(hobbies)) {
+      return res.status(400).json({ message: 'Hobbies must be an array' });
+    }
+  
     const id = (users.length + 1).toString();
     const newUser = { id, username, age, hobbies };
     users.push(newUser);
-    res.status(200).json({data:newUser,message:"User Created Successfully"});
+    res.status(200).json({ data: newUser, message: "User Created Successfully" });
   });
+  
 
   // Api call to update an existing user
   app.put('/api/users/:userId', basicAuthorizationMechanism, (req, res) => {
     const { userId } = req.params;
-    const { username, age,hobbies } = req.body;
+    const { username, age, hobbies } = req.body;
     const index = users.findIndex(u => u.id === userId);
     if (index === -1) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    if (!username || !age || !hobbies) {
+        return res.status(400).json({ message: 'Fields are missing.Username, age, and hobbies are required fields' });
+      }
+      
+    if (typeof age !== 'number') {
+        return res.status(400).json({ message: 'Age must be a number' });
+      }
+  
+    // Check if hobbies is not an array
+    if (!Array.isArray(hobbies)) {
+      return res.status(400).json({ message: 'Hobbies must be an array' });
+    }
+  
     users[index].username = username;
     users[index].age = age;
     users[index].hobbies = hobbies;
-    res.json({data:users[index],message:"User updated successfully"});
+    res.json({ data: users[index], message: "User updated successfully" });
   });
+  
 
   // Api call to delete a user
   app.delete('/api/users/:userId', basicAuthorizationMechanism, (req, res) => {
